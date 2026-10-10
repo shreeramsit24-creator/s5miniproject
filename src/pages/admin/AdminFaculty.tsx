@@ -1,0 +1,449 @@
+import React, { useState } from 'react';
+import { Plus, Search, Trash2, Edit3, X, Mail, Phone, BookOpen, Check, Filter, Users } from 'lucide-react';
+import { useAppStore } from '../../store/useAppStore';
+import { Faculty } from '../../types';
+import { 
+  extractAvailableDepartments, 
+  matchesDepartmentFilter 
+} from '../../utils/departmentUtils';
+
+const getInitials = (name: string) => {
+  const clean = name.replace(/^(Dr\.|Prof\.|Mr\.|Ms\.|Mrs\.)\s+/i, '').trim();
+  const parts = clean.split(' ').filter(Boolean);
+  if (parts.length === 0) return 'FC';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+};
+
+export const AdminFaculty: React.FC = () => {
+  const { faculty, addFaculty, updateFaculty, toggleFacultyStatus, deleteFaculty, subjects } = useAppStore();
+
+  const [search, setSearch] = useState('');
+  const [selectedDept, setSelectedDept] = useState('All');
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [editingFaculty, setEditingFaculty] = useState<Faculty | null>(null);
+  const [facultyToDelete, setFacultyToDelete] = useState<Faculty | null>(null);
+
+  const departmentOptions = React.useMemo(() => {
+    return extractAvailableDepartments({ faculty });
+  }, [faculty]);
+
+  // Form states
+  const [name, setName] = useState('');
+  const [employeeId, setEmployeeId] = useState('');
+  const [department, setDepartment] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
+  const [photoUrl, setPhotoUrl] = useState('');
+
+  const openAddDrawer = () => {
+    setEditingFaculty(null);
+    setName('');
+    setEmployeeId('');
+    setDepartment('');
+    setEmail('');
+    setPhone('');
+    setSelectedSubjects([]);
+    setPhotoUrl('');
+    setIsDrawerOpen(true);
+  };
+
+  const openEditDrawer = (fac: Faculty) => {
+    setEditingFaculty(fac);
+    setName(fac.name);
+    setEmployeeId(fac.employeeId);
+    setDepartment(fac.department);
+    setEmail(fac.email);
+    setPhone(fac.phone);
+    setSelectedSubjects(fac.subjects);
+    setPhotoUrl(fac.photoUrl || '');
+    setIsDrawerOpen(true);
+  };
+
+  const toggleSubjectSelect = (subName: string) => {
+    if (selectedSubjects.includes(subName)) {
+      setSelectedSubjects(selectedSubjects.filter((s) => s !== subName));
+    } else {
+      setSelectedSubjects([...selectedSubjects, subName]);
+    }
+  };
+
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingFaculty) {
+      updateFaculty(editingFaculty.id, {
+        name,
+        employeeId,
+        department,
+        email,
+        phone,
+        subjects: selectedSubjects,
+        photoUrl,
+      });
+    } else {
+      addFaculty({
+        name,
+        employeeId,
+        department,
+        email: email.trim(),
+        phone,
+        subjects: selectedSubjects,
+        active: true,
+        photoUrl,
+      });
+    }
+    setIsDrawerOpen(false);
+  };
+
+  const filteredFaculty = faculty.filter((fac) => {
+    const matchesSearch =
+      fac.name.toLowerCase().includes(search.toLowerCase()) ||
+      fac.employeeId.toLowerCase().includes(search.toLowerCase()) ||
+      fac.department.toLowerCase().includes(search.toLowerCase());
+    const matchesDept = selectedDept === 'All' || matchesDepartmentFilter(fac.department, selectedDept);
+    return matchesSearch && matchesDept;
+  });
+
+  return (
+    <div className="space-y-6 text-slate-900">
+      {/* Top Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">Faculty</h2>
+        </div>
+        <button
+          onClick={openAddDrawer}
+          className="px-5 py-2.5 rounded-full font-bold text-xs text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:brightness-110 shadow-md shadow-indigo-600/25 transition-all flex items-center gap-2 active:scale-95 self-start md:self-auto cursor-pointer"
+        >
+          <Plus size={16} />
+          <span>Add Faculty</span>
+        </button>
+      </div>
+
+      {/* Search Bar & Department Filter in White */}
+      <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+          <div className="relative w-full md:w-72">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search faculty..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:bg-white focus:outline-none focus:border-indigo-600"
+            />
+          </div>
+
+          {/* Department Quick Pills */}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex items-center gap-1 text-xs font-bold text-slate-700 uppercase tracking-wider mr-1">
+              <Filter size={13} className="text-indigo-600" />
+              <span>Dept:</span>
+            </div>
+            {departmentOptions.map((dept) => {
+              const isSelected = selectedDept === dept.code;
+              const count = dept.code === 'All' 
+                ? faculty.length 
+                : faculty.filter(f => matchesDepartmentFilter(f.department, dept.code)).length;
+              return (
+                <button
+                  key={dept.code}
+                  onClick={() => setSelectedDept(dept.code)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer ${
+                    isSelected
+                      ? 'bg-indigo-600 text-white shadow-xs'
+                      : 'bg-slate-100 hover:bg-slate-200/80 text-slate-700'
+                  }`}
+                >
+                  <span>{dept.shortLabel}</span>
+                  <span className={`text-[10px] px-1 rounded ${isSelected ? 'bg-indigo-700 text-indigo-100' : 'bg-slate-200/70 text-slate-500'}`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <span className="text-xs text-slate-500 hidden sm:block font-medium shrink-0">
+          {filteredFaculty.length} of {faculty.length} faculty
+        </span>
+      </div>
+
+      {/* Faculty Data Table in White */}
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead>
+              <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 font-bold uppercase tracking-wider text-[10px]">
+                <th className="py-3.5 px-4">Faculty Member</th>
+                <th className="py-3.5 px-4">Employee ID</th>
+                <th className="py-3.5 px-4">Department</th>
+                <th className="py-3.5 px-4">Subjects Assigned</th>
+                <th className="py-3.5 px-4">Contact</th>
+                <th className="py-3.5 px-4">Status</th>
+                <th className="py-3.5 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {filteredFaculty.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="text-center py-12 text-slate-400">
+                    <Users className="w-8 h-8 mx-auto mb-2 text-slate-300" />
+                    <p className="font-semibold text-xs text-slate-600">No faculty members found</p>
+                    <p className="text-[11px] text-slate-400 mt-0.5">Add a faculty member using the button above or adjust filters.</p>
+                  </td>
+                </tr>
+              ) : (
+                filteredFaculty.map((fac) => (
+                <tr key={fac.id} className="hover:bg-slate-50 transition">
+                  <td className="py-3.5 px-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-50 to-slate-100 border border-indigo-200/70 text-indigo-700 flex items-center justify-center text-xs font-bold shrink-0 shadow-2xs">
+                        {getInitials(fac.name)}
+                      </div>
+                      <div>
+                        <span className="font-bold text-slate-900 block">{fac.name}</span>
+                        <span className="text-[10px] text-indigo-600 font-semibold">Verified Instructor</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-3.5 px-4 font-mono font-semibold text-slate-700">
+                    {fac.employeeId}
+                  </td>
+                  <td className="py-3.5 px-4 text-slate-700 font-medium">
+                    {fac.department}
+                  </td>
+                  <td className="py-3.5 px-4">
+                    <div className="flex flex-wrap gap-1 max-w-xs">
+                      {fac.subjects.map((sub, i) => (
+                        <span
+                          key={i}
+                          className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100"
+                        >
+                          {sub}
+                        </span>
+                      ))}
+                    </div>
+                  </td>
+                  <td className="py-3.5 px-4 text-slate-600 space-y-0.5">
+                    <div className="flex items-center gap-1.5 text-[11px]">
+                      <Mail size={12} className="text-slate-400" />
+                      <span>{fac.email}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-[11px] font-mono">
+                      <Phone size={12} className="text-slate-400" />
+                      <span>{fac.phone}</span>
+                    </div>
+                  </td>
+                  <td className="py-3.5 px-4">
+                    <button
+                      onClick={() => toggleFacultyStatus(fac.id)}
+                      className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                        fac.active ? 'bg-emerald-500' : 'bg-slate-300'
+                      }`}
+                    >
+                      <span
+                        className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                          fac.active ? 'translate-x-4' : 'translate-x-0'
+                        }`}
+                      />
+                    </button>
+                    <span className="ml-2 text-[10px] font-bold text-slate-500">
+                      {fac.active ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className="py-3.5 px-4 text-right">
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        onClick={() => openEditDrawer(fac)}
+                        className="p-1.5 text-slate-400 hover:text-indigo-600 rounded-lg hover:bg-slate-100 transition"
+                        title="Edit Faculty"
+                      >
+                        <Edit3 size={15} />
+                      </button>
+                      <button
+                        onClick={() => setFacultyToDelete(fac)}
+                        className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition cursor-pointer"
+                        title="Remove Faculty (Resigned / Left)"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              )))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Slide Drawer for Add/Edit Faculty in White */}
+      {isDrawerOpen && (
+        <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/25 backdrop-blur-xs">
+          <div className="w-full max-w-md h-full bg-white border-l border-slate-200 shadow-2xl flex flex-col p-6 overflow-hidden text-slate-900 animate-in slide-in-from-right">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div>
+                <h3 className="font-bold text-slate-900 text-base">
+                  {editingFaculty ? 'Edit Faculty' : 'Add New Faculty'}
+                </h3>
+                <p className="text-xs text-slate-500">Staff profile & subject assignments</p>
+              </div>
+              <button
+                onClick={() => setIsDrawerOpen(false)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSave} className="flex-1 overflow-y-auto py-4 space-y-4 pr-1">
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Full Name</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="e.g. Prof. Priya Dharshini"
+                  className="w-full px-3 py-2 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-indigo-600"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">Employee ID</label>
+                  <input
+                    type="text"
+                    value={employeeId}
+                    onChange={(e) => setEmployeeId(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-900 focus:bg-white focus:outline-none focus:border-indigo-600 font-mono"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">Department</label>
+                  <select
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
+                    className="w-full px-3 py-2 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none"
+                  >
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="AI & Data Science">AI & Data Science</option>
+                    <option value="Information Tech">Information Tech</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  placeholder="faculty@institution.edu"
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">Phone</label>
+                <input
+                  type="text"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-900 focus:outline-none font-mono"
+                />
+              </div>
+
+              {/* Assign Subjects Multi-Select */}
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-1.5 flex items-center justify-between">
+                  <span>Assign Subjects</span>
+                  <span className="text-[10px] text-indigo-600 font-bold">Click to toggle</span>
+                </label>
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                  <div className="flex flex-wrap gap-1.5">
+                    {subjects.map((sub) => {
+                      const label = `${sub.code} ${sub.name}`;
+                      const isSelected = selectedSubjects.includes(label);
+                      return (
+                        <button
+                          type="button"
+                          key={sub.id}
+                          onClick={() => toggleSubjectSelect(label)}
+                          className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition cursor-pointer ${
+                            isSelected
+                              ? 'bg-indigo-600 text-white shadow-xs'
+                              : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
+                          }`}
+                        >
+                          {isSelected && <Check size={12} />}
+                          <span>{label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsDrawerOpen(false)}
+                  className="px-4 py-2 rounded-lg text-xs font-medium text-slate-600 hover:bg-slate-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-full text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:brightness-110 shadow-md"
+                >
+                  {editingFaculty ? 'Save Changes' : 'Create Faculty'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Delete Faculty Confirmation Dialog */}
+      {facultyToDelete && (
+        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in">
+          <div className="bg-white w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-slate-200 space-y-4 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+              <Trash2 size={24} />
+            </div>
+
+            <div className="space-y-1.5">
+              <h3 className="text-base font-black text-slate-900 tracking-tight">
+                Remove Faculty Member?
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Are you sure you want to remove <strong className="text-slate-800">{facultyToDelete.name}</strong> from the faculty directory? This removes their profile and assignments in case of resignation.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 pt-2">
+              <button
+                onClick={() => setFacultyToDelete(null)}
+                className="py-2.5 rounded-xl text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  deleteFaculty(facultyToDelete.id);
+                  setFacultyToDelete(null);
+                }}
+                className="py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-xs cursor-pointer"
+              >
+                Remove Faculty
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
