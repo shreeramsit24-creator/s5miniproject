@@ -62,12 +62,12 @@ function AppContent() {
       {/* Main Routed Standalone Apps */}
       <main className="flex-1 flex flex-col min-h-0 bg-white">
         <Routes>
-          {/* 1. Smart Attendance Portal */}
+          {/* 1. ClassSure Admin Portal */}
           <Route path="/" element={<PortalLogin />} />
           <Route path="/portal" element={<PortalLogin />} />
           <Route path="/admin/login" element={<PortalLogin />} />
 
-          {/* 2. Smart Attendance Student & Faculty App Login */}
+          {/* 2. ClassSure Student & Faculty App Login */}
           <Route path="/login" element={<AppLogin />} />
           <Route path="/app/login" element={<AppLogin />} />
           <Route path="/student/login" element={<AppLogin />} />

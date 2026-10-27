@@ -36,15 +36,102 @@ interface BeaconDevice {
   firmwareVersion: string;
 }
 
+const defaultBeaconDevices: BeaconDevice[] = [
+  {
+    id: 'room-lh-201',
+    roomName: 'LH-201',
+    roomType: 'Lecture Hall',
+    beaconUuid: 'e2c56db5-dffb-48d2-b060-d0f5a71096e0',
+    major: 100,
+    minor: 210,
+    powerTier: 'Classroom (15m)',
+    txPowerDbm: -12,
+    batteryLevel: 98,
+    status: 'active',
+    lastPingAt: 'Just now',
+    firmwareVersion: 'v2.4.1-ble5',
+  },
+  {
+    id: 'room-lh-204',
+    roomName: 'LH-204',
+    roomType: 'Lecture Hall',
+    beaconUuid: 'e2c56db5-dffb-48d2-b060-d0f5a71096e2',
+    major: 100,
+    minor: 220,
+    powerTier: 'Classroom (15m)',
+    txPowerDbm: -12,
+    batteryLevel: 95,
+    status: 'active',
+    lastPingAt: 'Just now',
+    firmwareVersion: 'v2.4.1-ble5',
+  },
+  {
+    id: 'room-ai-304',
+    roomName: 'AI Center Lab 304',
+    roomType: 'Laboratory',
+    beaconUuid: 'e2c56db5-dffb-48d2-b060-d0f5a71096e4',
+    major: 100,
+    minor: 230,
+    powerTier: 'Near (5m)',
+    txPowerDbm: -18,
+    batteryLevel: 92,
+    status: 'active',
+    lastPingAt: 'Just now',
+    firmwareVersion: 'v2.4.1-ble5',
+  },
+  {
+    id: 'room-turing-102',
+    roomName: 'Turing Hall 102',
+    roomType: 'Lecture Hall',
+    beaconUuid: 'e2c56db5-dffb-48d2-b060-d0f5a71096e3',
+    major: 100,
+    minor: 240,
+    powerTier: 'Auditorium (30m)',
+    txPowerDbm: -4,
+    batteryLevel: 89,
+    status: 'active',
+    lastPingAt: 'Just now',
+    firmwareVersion: 'v2.4.1-ble5',
+  },
+  {
+    id: 'room-sensor-105',
+    roomName: 'Sensor Lab 105',
+    roomType: 'Laboratory',
+    beaconUuid: 'e2c56db5-dffb-48d2-b060-d0f5a71096e5',
+    major: 100,
+    minor: 250,
+    powerTier: 'Near (5m)',
+    txPowerDbm: -18,
+    batteryLevel: 97,
+    status: 'active',
+    lastPingAt: 'Just now',
+    firmwareVersion: 'v2.4.1-ble5',
+  },
+  {
+    id: 'room-sem-2',
+    roomName: 'Seminar Hall 2',
+    roomType: 'Seminar Hall',
+    beaconUuid: 'e2c56db5-dffb-48d2-b060-d0f5a71096e6',
+    major: 100,
+    minor: 260,
+    powerTier: 'Classroom (15m)',
+    txPowerDbm: -12,
+    batteryLevel: 94,
+    status: 'active',
+    lastPingAt: 'Just now',
+    firmwareVersion: 'v2.4.1-ble5',
+  },
+];
+
 export const AdminRoomBeacon: React.FC = () => {
-  const [beacons, setBeacons] = useState<BeaconDevice[]>([]);
+  const [beacons, setBeacons] = useState<BeaconDevice[]>(defaultBeaconDevices);
   const [pingingId, setPingingId] = useState<string | null>(null);
   const [selectedBeacon, setSelectedBeacon] = useState<BeaconDevice | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Form for new beacon
-  const [newRoomName, setNewRoomName] = useState('');
+  // Form for new beacon (Pre-filled with default room for fast registration)
+  const [newRoomName, setNewRoomName] = useState('LH-305');
   const [newRoomType, setNewRoomType] = useState<BeaconDevice['roomType']>('Lecture Hall');
   const [newPowerTier, setNewPowerTier] = useState<BeaconDevice['powerTier']>('Classroom (15m)');
   const [newMinor, setNewMinor] = useState(210);
@@ -57,7 +144,7 @@ export const AdminRoomBeacon: React.FC = () => {
   const fetchRooms = async () => {
     try {
       const rooms = await adminApi.getRooms();
-      if (rooms && Array.isArray(rooms)) {
+      if (rooms && Array.isArray(rooms) && rooms.length > 0) {
         const mapped: BeaconDevice[] = rooms.map((r, idx) => ({
           id: r.id,
           roomName: r.name,

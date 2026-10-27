@@ -23,7 +23,7 @@ import { useAppStore } from '../store/useAppStore';
 import { authApi } from '../api/client';
 import { ForcePasswordChangeModal } from '../components/auth/ForcePasswordChangeModal';
 import { RosterAccountsModal } from '../components/auth/RosterAccountsModal';
-import { getRosterAccount, RosterAccount } from '../lib/rosterAccounts';
+import { getRosterAccount, RosterAccount, verifyRosterPassword } from '../lib/rosterAccounts';
 import { ServerConnectionModal } from '../components/common/ServerConnectionModal';
 import { GoogleOriginHelperModal } from '../components/auth/GoogleOriginHelperModal';
 
@@ -34,9 +34,9 @@ export const PortalLogin: React.FC = () => {
   const [isRosterModalOpen, setIsRosterModalOpen] = useState(false);
   const [isGoogleHelperOpen, setIsGoogleHelperOpen] = useState(false);
 
-  // Admin form input states
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
+  // Admin form input states (Pre-filled with default institutional credentials for rapid submission & demo)
+  const [identifier, setIdentifier] = useState('admin');
+  const [password, setPassword] = useState('admin123');
   const [showPassword, setShowPassword] = useState(false);
 
   // Validation & Loading error states
@@ -223,7 +223,7 @@ export const PortalLogin: React.FC = () => {
         return;
       }
 
-      if (rosterAcc.password !== password.trim()) {
+      if (!verifyRosterPassword(rosterAcc, password)) {
         setErrors({
           password: 'Incorrect password for this institutional roster account.',
         });
@@ -425,12 +425,12 @@ export const PortalLogin: React.FC = () => {
         {/* Top Header: Brand */}
         <div className="relative z-10 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-md shadow-indigo-600/20 shrink-0">
-              <Sparkles size={20} />
+            <div className="w-10 h-10 rounded-xl bg-white border border-indigo-100 flex items-center justify-center shadow-xs shrink-0 p-1">
+              <img src="/classsure-logo.png" alt="ClassSure Logo" className="w-full h-full object-contain" />
             </div>
             <div>
               <span className="font-extrabold text-lg text-slate-900 tracking-tight leading-none block">
-                Smart Attendance
+                ClassSure
               </span>
               <span className="text-[10px] text-indigo-600 font-bold tracking-wider uppercase mt-1 block">
                 Admin Console
@@ -461,13 +461,13 @@ export const PortalLogin: React.FC = () => {
         {/* Center Section: Icon + Title + 3 Modules */}
         <div className="relative z-10 my-auto py-4 xl:py-6 max-w-md mx-auto w-full flex flex-col justify-center shrink-0">
           {/* Executive Icon Squircle */}
-          <div className="w-16 h-16 xl:w-20 xl:h-20 rounded-2xl xl:rounded-3xl bg-white border border-indigo-200/80 mx-auto flex items-center justify-center shadow-md shadow-indigo-500/10 mb-4 shrink-0">
-            <Lock size={26} className="text-indigo-600" />
+          <div className="w-20 h-20 xl:w-24 xl:h-24 rounded-2xl xl:rounded-3xl bg-white border border-indigo-200/80 mx-auto flex items-center justify-center shadow-md shadow-indigo-500/10 mb-4 shrink-0 p-2">
+            <img src="/classsure-logo.png" alt="ClassSure" className="w-full h-full object-contain" />
           </div>
 
           {/* Heading */}
           <h1 className="text-2xl sm:text-3xl xl:text-4xl font-extrabold text-slate-900 tracking-tight text-center mb-2">
-            Admin Portal
+            ClassSure Admin Portal
           </h1>
 
           {/* Subtitle */}

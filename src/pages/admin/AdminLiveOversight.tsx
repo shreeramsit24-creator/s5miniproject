@@ -38,7 +38,47 @@ interface ConcurrentLecture {
   status: 'broadcasting' | 'concluded';
 }
 
-const concurrentLectures: ConcurrentLecture[] = [];
+const concurrentLectures: ConcurrentLecture[] = [
+  {
+    id: 'lec-live-001',
+    courseCode: 'CS305',
+    courseName: 'High-Performance Distributed Databases',
+    facultyName: 'Dr. M. Priya',
+    room: 'LH-201',
+    department: 'Computer Science and Engineering',
+    enrolled: 65,
+    present: 62,
+    startedAt: '10:00 AM',
+    faceRequired: true,
+    status: 'broadcasting',
+  },
+  {
+    id: 'lec-live-002',
+    courseCode: 'EC306',
+    courseName: 'IoT & BLE Wireless Sensor Networks',
+    facultyName: 'Prof. R. Karthik',
+    room: 'Sensor Lab 105',
+    department: 'Electronics and Communication Engineering',
+    enrolled: 60,
+    present: 57,
+    startedAt: '10:15 AM',
+    faceRequired: true,
+    status: 'broadcasting',
+  },
+  {
+    id: 'lec-live-003',
+    courseCode: 'AI302',
+    courseName: 'Deep Learning & Neural Networks',
+    facultyName: 'Dr. K. Ramesh',
+    room: 'Hall B-201',
+    department: 'Artificial Intelligence and Data Science',
+    enrolled: 64,
+    present: 61,
+    startedAt: '10:00 AM',
+    faceRequired: true,
+    status: 'broadcasting',
+  },
+];
 
 export const AdminLiveOversight: React.FC = () => {
   const { activeSession, attendanceRecords, endSession, studentCheckIn } = useSessionStore();

@@ -28,24 +28,24 @@ export const AdminFaculty: React.FC = () => {
     return extractAvailableDepartments({ faculty });
   }, [faculty]);
 
-  // Form states
-  const [name, setName] = useState('');
-  const [employeeId, setEmployeeId] = useState('');
-  const [department, setDepartment] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  // Form states (Pre-filled with institutional defaults)
+  const [name, setName] = useState('Dr. K. Anand');
+  const [employeeId, setEmployeeId] = useState('AK2628');
+  const [department, setDepartment] = useState('Information Technology');
+  const [email, setEmail] = useState('anand.k@bitsathy.ac.in');
+  const [phone, setPhone] = useState('9842112233');
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
-  const [photoUrl, setPhotoUrl] = useState('');
+  const [photoUrl, setPhotoUrl] = useState('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150');
 
   const openAddDrawer = () => {
     setEditingFaculty(null);
-    setName('');
-    setEmployeeId('');
-    setDepartment('');
-    setEmail('');
-    setPhone('');
-    setSelectedSubjects([]);
-    setPhotoUrl('');
+    setName('Dr. K. Anand');
+    setEmployeeId('AK2628');
+    setDepartment('Information Technology');
+    setEmail('anand.k@bitsathy.ac.in');
+    setPhone('9842112233');
+    setSelectedSubjects(subjects.slice(0, 2).map((s) => s.id));
+    setPhotoUrl('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150');
     setIsDrawerOpen(true);
   };
 

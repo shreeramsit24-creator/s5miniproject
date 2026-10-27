@@ -18,7 +18,7 @@ import { NativeGoogleAuth, isNativeAndroid } from '../utils/nativeAuth';
 import { useAppStore } from '../store/useAppStore';
 import { authApi } from '../api/client';
 import { ForcePasswordChangeModal } from '../components/auth/ForcePasswordChangeModal';
-import { getRosterAccount, RosterAccount } from '../lib/rosterAccounts';
+import { getRosterAccount, RosterAccount, verifyRosterPassword } from '../lib/rosterAccounts';
 import { RosterAccountsModal } from '../components/auth/RosterAccountsModal';
 import { ServerConnectionModal } from '../components/common/ServerConnectionModal';
 import { GoogleOriginHelperModal } from '../components/auth/GoogleOriginHelperModal';
@@ -36,8 +36,9 @@ export const AppLogin: React.FC = () => {
   const isFacultyRoute = location.pathname.toLowerCase().includes('faculty') || Boolean(new URLSearchParams(location.search).get('role') === 'faculty');
   const [activeRoleTab, setActiveRoleTab] = useState<'faculty' | 'student'>(isFacultyRoute ? 'faculty' : 'student');
 
-  const [identifier, setIdentifier] = useState(isFacultyRoute ? 'AK2625' : '');
-  const [password, setPassword] = useState(isFacultyRoute ? 'faculty123' : '');
+  // Pre-filled default credentials for rapid evaluation & submission
+  const [identifier, setIdentifier] = useState(isFacultyRoute ? 'AK2625' : '7376242IT303');
+  const [password, setPassword] = useState(isFacultyRoute ? 'faculty123' : 'student123');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -236,7 +237,7 @@ export const AppLogin: React.FC = () => {
         return;
       }
 
-      if (rosterAcc.password !== password.trim()) {
+      if (!verifyRosterPassword(rosterAcc, password)) {
         setErrors({
           password: 'Incorrect password for this institutional roster account.',
         });
@@ -426,25 +427,19 @@ export const AppLogin: React.FC = () => {
     <div className="min-h-screen lg:h-screen lg:max-h-screen w-full bg-slate-50 flex flex-col justify-between items-center p-3 sm:p-5 lg:p-6 font-sans selection:bg-teal-600 selection:text-white lg:overflow-hidden">
       {/* Top Header Branding (Centered) */}
       <div className="flex flex-col items-center text-center pt-1 xl:pt-4 shrink-0">
-        {/* Custom AttendEase Squircle App Icon */}
-        <div className={`w-14 h-14 xl:w-18 xl:h-18 rounded-2xl bg-gradient-to-tr ${activeRoleTab === 'faculty' ? 'from-indigo-600 to-violet-600 shadow-indigo-600/25' : 'from-teal-500 to-emerald-600 shadow-teal-500/25'} text-white flex flex-col items-center justify-center p-1.5 shadow-md mb-2 relative group hover:scale-105 transition`}>
-          <div className="relative flex items-center justify-center">
-            <div className="absolute w-9 h-9 xl:w-11 xl:h-11 rounded-full border border-white/40 animate-ping" />
-            <ScanFace size={22} className="text-white z-10" />
-          </div>
-          <span className="text-[8px] xl:text-[9px] font-extrabold text-teal-100 tracking-wider uppercase mt-1 leading-none">
-            {activeRoleTab === 'faculty' ? 'Faculty Portal' : 'Smart Attendance'}
-          </span>
+        {/* ClassSure Official App Icon */}
+        <div className="w-16 h-16 xl:w-20 xl:h-20 rounded-2xl bg-white border border-slate-200/90 shadow-md p-2 mb-2 relative group hover:scale-105 transition flex items-center justify-center">
+          <img src="/classsure-logo.png" alt="ClassSure Logo" className="w-full h-full object-contain" />
         </div>
 
         {/* Brand Title */}
         <h1 className={`text-2xl xl:text-3xl font-extrabold ${activeRoleTab === 'faculty' ? 'text-indigo-950' : 'text-teal-900'} tracking-tight`}>
-          {activeRoleTab === 'faculty' ? 'Faculty Portal' : 'Smart Attendance'}
+          {activeRoleTab === 'faculty' ? 'ClassSure Faculty Portal' : 'ClassSure Student App'}
         </h1>
 
         {/* Subtitle */}
         <p className="text-[11px] xl:text-xs text-slate-500 font-medium mt-0.5">
-          {activeRoleTab === 'faculty' ? 'Broadcast classroom attendance & manage academic schedules' : 'Touchless campus attendance at your fingertips'}
+          {activeRoleTab === 'faculty' ? 'Broadcast classroom attendance & manage academic schedules' : 'Touchless BLE beacon + Face biometric verified campus attendance'}
         </p>
       </div>
 

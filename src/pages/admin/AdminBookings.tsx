@@ -10,10 +10,10 @@ export const AdminBookings: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'new-slot' | 'reserve-student'>('new-slot');
 
-  // New Slot Form state
-  const [slotSubject, setSlotSubject] = useState('');
-  const [slotFaculty, setSlotFaculty] = useState('');
-  const [slotRoom, setSlotRoom] = useState('');
+  // New Slot Form state (Pre-filled with defaults)
+  const [slotSubject, setSlotSubject] = useState('Data Structures & Algorithms Laboratory');
+  const [slotFaculty, setSlotFaculty] = useState('Dr. K. Anand');
+  const [slotRoom, setSlotRoom] = useState('Computing Lab 2');
   const [slotDate, setSlotDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [slotTime, setSlotTime] = useState('09:00 AM - 10:00 AM');
   const [slotCapacity, setSlotCapacity] = useState(30);

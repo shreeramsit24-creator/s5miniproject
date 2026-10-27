@@ -60,7 +60,7 @@ export const AdminLeaveOversight: React.FC = () => {
     try {
       const data = await adminApi.getLeaveOversight();
       if (data) {
-        useAppStore.setState((state) => {
+        useAppStore.setState(() => {
           const updates: any = {};
           if (Array.isArray(data.studentLeaves)) {
             updates.leaveRequests = data.studentLeaves;
@@ -308,7 +308,7 @@ export const AdminLeaveOversight: React.FC = () => {
 
         {/* Quick KPI stats */}
         {activeCategory === 'students' ? (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-slate-100">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mt-6 pt-5 border-t border-slate-100">
             <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
               <span className="text-[11px] font-medium text-slate-500 block">Total Requests</span>
               <div className="text-lg font-bold text-slate-900 font-mono mt-0.5">{leaveRequests.length}</div>
@@ -324,6 +324,10 @@ export const AdminLeaveOversight: React.FC = () => {
             <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
               <span className="text-[11px] font-medium text-slate-500 block">Approved</span>
               <div className="text-lg font-bold text-emerald-700 font-mono mt-0.5">{studentApprovedCount}</div>
+            </div>
+            <div className="bg-slate-50 rounded-xl p-3 border border-slate-100">
+              <span className="text-[11px] font-medium text-slate-500 block">Rejected</span>
+              <div className="text-lg font-bold text-slate-700 font-mono mt-0.5">{studentRejectedCount}</div>
             </div>
           </div>
         ) : (

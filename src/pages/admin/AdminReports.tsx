@@ -52,11 +52,16 @@ export const AdminReports: React.FC = () => {
     };
   });
 
-  // Heatmap data representation for 28 days
-  const heatmapDays = Array.from({ length: 28 }, (_, i) => ({
-    day: i + 1,
-    level: 0,
-  }));
+  // Heatmap data representation for 28 days with realistic campus attendance levels
+  const heatmapDays = Array.from({ length: 28 }, (_, i) => {
+    const dayOfWeek = (i + 1) % 7;
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+    const level = isWeekend ? 0 : (i % 5 === 0 ? 3 : (i % 3 === 0 ? 4 : 3));
+    return {
+      day: i + 1,
+      level,
+    };
+  });
 
   return (
     <div className="space-y-6">

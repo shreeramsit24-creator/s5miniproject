@@ -96,9 +96,9 @@ export const AdminCourseSetup: React.FC = () => {
 
   // Form state
   const [formData, setFormData] = useState({
-    code: '',
-    name: '',
-    department: '',
+    code: 'IT305',
+    name: 'Mobile Computing & Pervasive Systems',
+    department: 'Information Technology',
     credits: 3,
     assignedFacultyIds: [] as string[],
     assignedClassIds: [] as string[],
@@ -142,12 +142,12 @@ export const AdminCourseSetup: React.FC = () => {
 
   const openAddModal = () => {
     setFormData({
-      code: '',
-      name: '',
-      department: 'Computer Science',
+      code: 'IT305',
+      name: 'Mobile Computing & Pervasive Systems',
+      department: 'Information Technology',
       credits: 3,
-      assignedFacultyIds: [],
-      assignedClassIds: [],
+      assignedFacultyIds: faculty.slice(0, 1).map(f => f.id),
+      assignedClassIds: classSections.slice(0, 1).map(c => c.id),
     });
     setEditingCourse(null);
     setIsAddModalOpen(true);

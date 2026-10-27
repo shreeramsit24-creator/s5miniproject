@@ -123,13 +123,13 @@ export const AdminMobileApp: React.FC = () => {
       <header className="hidden md:flex sticky top-0 z-50 bg-white border-b border-slate-200 px-6 lg:px-10 py-3.5 items-center justify-between shadow-xs">
         {/* Brand & Identity */}
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-600 text-white flex items-center justify-center shadow-xs">
-            <Radio size={18} className="text-white animate-pulse" />
+          <div className="w-9 h-9 rounded-xl bg-white border border-slate-200 p-1 flex items-center justify-center shadow-xs">
+            <img src="/classsure-logo.png" alt="ClassSure" className="w-full h-full object-contain" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <span className="font-extrabold text-base text-slate-900 tracking-tight leading-none">
-                Smart Attendance
+                ClassSure
               </span>
               <span className="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-bold">
                 Admin
@@ -239,11 +239,11 @@ export const AdminMobileApp: React.FC = () => {
           ======================================================== */}
       <header className="md:hidden sticky top-0 z-50 bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center font-bold">
-            <Radio size={16} />
+          <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 p-1 flex items-center justify-center shrink-0 shadow-xs">
+            <img src="/classsure-logo.png" alt="ClassSure" className="w-full h-full object-contain" />
           </div>
           <div>
-            <h2 className="font-extrabold text-sm text-slate-900 leading-none">Smart Attendance</h2>
+            <h2 className="font-extrabold text-sm text-slate-900 leading-none">ClassSure</h2>
             <span className="text-[10px] text-amber-800 font-bold">
               Admin &bull; {navItems.find(i => i.id === activeTab)?.label}
             </span>

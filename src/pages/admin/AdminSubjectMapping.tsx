@@ -18,12 +18,12 @@ export const AdminSubjectMapping: React.FC = () => {
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'classes' | 'faculty'>('overview');
 
-  // Add Subject Modal state
+  // Add Subject Modal state (Pre-filled with defaults)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [newSubName, setNewSubName] = useState('');
-  const [newSubCode, setNewSubCode] = useState('');
-  const [newSubCredits, setNewSubCredits] = useState(3);
-  const [newSubDept, setNewSubDept] = useState('');
+  const [newSubName, setNewSubName] = useState('Deep Learning & Neural Networks');
+  const [newSubCode, setNewSubCode] = useState('22IT601');
+  const [newSubCredits, setNewSubCredits] = useState(4);
+  const [newSubDept, setNewSubDept] = useState('Information Technology');
 
   const filteredSubjects = subjects.filter(
     (s) =>
@@ -42,8 +42,10 @@ export const AdminSubjectMapping: React.FC = () => {
       assignedClassIds: [],
     });
     setIsAddModalOpen(false);
-    setNewSubName('');
-    setNewSubCode('');
+    setNewSubName('Deep Learning & Neural Networks');
+    setNewSubCode('22IT601');
+    setNewSubCredits(4);
+    setNewSubDept('Information Technology');
   };
 
   return (

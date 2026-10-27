@@ -15,7 +15,17 @@ import {
 import {
   emptyStudent,
   emptyFaculty,
+  defaultAdminUser,
   defaultSettings,
+  initialStudents,
+  initialFaculty,
+  initialSubjects,
+  initialClassSections,
+  initialTimetable,
+  initialBookings,
+  initialNotifications,
+  initialLeaves,
+  initialFacultyLeaves,
 } from '../lib/mock-data';
 import { studentApi, facultyApi, adminApi, authApi } from '../api/client';
 
@@ -182,7 +192,37 @@ export const useAppStore = create<AppState>((set, get) => ({
     mentorId: savedMentorId,
     designation: savedDesignation,
     faceIdStatus: savedFaceStatus || (savedRole === 'student' ? 'pending' : undefined),
-  } : null,
+  } : savedRole === 'faculty' ? {
+    name: emptyFaculty.name,
+    email: emptyFaculty.email,
+    role: 'faculty',
+    employeeId: emptyFaculty.employeeId,
+    department: emptyFaculty.department,
+    phone: emptyFaculty.phone,
+    designation: emptyFaculty.designation,
+    isMentor: emptyFaculty.isMentor,
+    mentorGroup: emptyFaculty.mentorGroup,
+  } : savedRole === 'student' ? {
+    name: emptyStudent.name,
+    email: emptyStudent.email,
+    role: 'student',
+    rollNumber: emptyStudent.rollNumber,
+    department: emptyStudent.department,
+    phone: emptyStudent.phone,
+    year: emptyStudent.year,
+    section: emptyStudent.section,
+    attendanceRate: emptyStudent.attendanceRate,
+    mentorId: emptyStudent.mentorId,
+    mentorName: emptyStudent.mentorName,
+    faceIdStatus: emptyStudent.faceIdStatus,
+  } : {
+    name: defaultAdminUser.name,
+    email: defaultAdminUser.email,
+    role: 'admin',
+    department: defaultAdminUser.department,
+    phone: defaultAdminUser.phone,
+    designation: defaultAdminUser.designation,
+  },
 
   setAuthUser: (userData) => {
     if (typeof window !== 'undefined') {
@@ -349,7 +389,7 @@ export const useAppStore = create<AppState>((set, get) => ({
           if (meUser.designation) localStorage.setItem('auth_user_desig', meUser.designation);
         }
 
-        if (stus !== null && Array.isArray(stus)) {
+        if (stus !== null && Array.isArray(stus) && stus.length > 0) {
           nextState.students = stus;
           if (state.currentUser?.role === 'student' || meUser?.role === 'student') {
             const currentStu = stus.find(s => 
@@ -367,8 +407,8 @@ export const useAppStore = create<AppState>((set, get) => ({
           }
         }
 
-        const facultyList = facs !== null && Array.isArray(facs) ? facs : state.faculty;
-        if (facs !== null && Array.isArray(facs)) {
+        const facultyList = facs !== null && Array.isArray(facs) && facs.length > 0 ? facs : state.faculty;
+        if (facs !== null && Array.isArray(facs) && facs.length > 0) {
           nextState.faculty = facs;
           if (state.currentUser?.role === 'faculty' || state.currentRole === 'faculty' || meUser?.role === 'faculty') {
             const empId = meUser?.employee_id || state.currentUser?.employeeId || state.selectedFaculty?.employeeId;
@@ -421,28 +461,28 @@ export const useAppStore = create<AppState>((set, get) => ({
         }
 
         if (oversight) {
-          if (oversight.studentLeaves && Array.isArray(oversight.studentLeaves)) {
+          if (oversight.studentLeaves && Array.isArray(oversight.studentLeaves) && oversight.studentLeaves.length > 0) {
             nextState.leaveRequests = oversight.studentLeaves;
           }
-          if (oversight.facultyLeaves && Array.isArray(oversight.facultyLeaves)) {
+          if (oversight.facultyLeaves && Array.isArray(oversight.facultyLeaves) && oversight.facultyLeaves.length > 0) {
             nextState.facultyLeaveRequests = oversight.facultyLeaves;
           }
         } else if (isFac) {
-          if (facApprovals && Array.isArray(facApprovals)) {
+          if (facApprovals && Array.isArray(facApprovals) && facApprovals.length > 0) {
             nextState.leaveRequests = facApprovals;
           }
-          if (facLeaves && Array.isArray(facLeaves)) {
+          if (facLeaves && Array.isArray(facLeaves) && facLeaves.length > 0) {
             nextState.facultyLeaveRequests = facLeaves;
           }
         } else if (isStu) {
-          if (stuLeaves && Array.isArray(stuLeaves)) {
+          if (stuLeaves && Array.isArray(stuLeaves) && stuLeaves.length > 0) {
             nextState.leaveRequests = stuLeaves;
           }
         }
 
         // Build Subjects Map directly from backend courses (fallback to existing if offline/null)
         const subjectMap = new Map<string, Subject>();
-        if (backendCourses !== null && Array.isArray(backendCourses)) {
+        if (backendCourses !== null && Array.isArray(backendCourses) && backendCourses.length > 0) {
           backendCourses.forEach((c: any) => {
             subjectMap.set(c.id, {
               id: c.id,
@@ -460,7 +500,7 @@ export const useAppStore = create<AppState>((set, get) => ({
 
         // Build Class Sections Map directly from backend sections (fallback to existing if offline/null)
         const sectionMap = new Map<string, ClassSection>();
-        if (backendSections !== null && Array.isArray(backendSections)) {
+        if (backendSections !== null && Array.isArray(backendSections) && backendSections.length > 0) {
           backendSections.forEach((cs: any) => {
             sectionMap.set(cs.id, {
               id: cs.id,
@@ -477,7 +517,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         }
 
         // Process timetable slots directly from backend
-        if (slots !== null && Array.isArray(slots)) {
+        if (slots !== null && Array.isArray(slots) && slots.length > 0) {
           const formattedSlots: TimetableSlot[] = slots.map((s: any) => ({
             id: s.id,
             day: s.day,
@@ -664,7 +704,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   } : emptyFaculty,
   setSelectedFaculty: (faculty) => set({ selectedFaculty: faculty }),
 
-  students: [],
+  students: initialStudents,
   addStudent: (newStd) => {
     // Optimistic store update
     set((state) => ({
@@ -700,7 +740,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     }).catch(console.warn);
   },
 
-  faculty: [],
+  faculty: initialFaculty,
   addFaculty: (newFac) => {
     set((state) => ({
       faculty: [
@@ -743,7 +783,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     }).catch(console.warn);
   },
 
-  subjects: [],
+  subjects: initialSubjects,
   addSubject: (newSub) => {
     const tempId = (newSub as any).id || `sub-${Date.now()}`;
     set((state) => ({
@@ -777,7 +817,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     adminApi.deleteCourse(id).catch(console.warn);
   },
 
-  classSections: [],
+  classSections: initialClassSections,
   updateClassMapping: (classId, subjectId, facultyId) => {
     set((state) => ({
       classSections: state.classSections.map((cs) => {
@@ -794,7 +834,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     }).catch(console.warn);
   },
 
-  timetable: [],
+  timetable: initialTimetable,
   addTimetableSlot: (newSlot) => {
     const tempId = `slot-${Date.now()}`;
     set((state) => ({
@@ -831,7 +871,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     await get().syncWithBackend();
   },
 
-  bookings: [],
+  bookings: initialBookings,
   addBooking: (slotId, studentId) => {
     const { bookings } = get();
     const slot = bookings.find((b) => b.id === slotId);
@@ -877,7 +917,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       ),
     })),
 
-  leaveRequests: [],
+  leaveRequests: initialLeaves,
   addLeaveRequest: (req) => {
     const tempId = `leave-${Date.now()}`;
     set((state) => ({
@@ -962,7 +1002,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       leaveRequests: state.leaveRequests.filter((l) => l.id !== id),
     })),
 
-  facultyLeaveRequests: [],
+  facultyLeaveRequests: initialFacultyLeaves,
   addFacultyLeaveRequest: (req) => {
     const tempId = `fac-leave-${Date.now()}`;
     set((state) => ({
@@ -1059,7 +1099,7 @@ export const useAppStore = create<AppState>((set, get) => ({
     facultyApi.cancelLeave(id).catch(console.warn);
   },
 
-  notifications: [],
+  notifications: initialNotifications,
   markNotificationRead: (id) =>
     set((state) => ({
       notifications: state.notifications.map((n) => (n.id === id ? { ...n, read: true } : n)),

@@ -42,29 +42,29 @@ export const AdminStudents: React.FC = () => {
     return extractAvailableDepartments({ students });
   }, [students]);
 
-  // Form states
-  const [name, setName] = useState('');
-  const [rollNumber, setRollNumber] = useState('');
-  const [department, setDepartment] = useState('');
-  const [year, setYear] = useState(1);
-  const [section, setSection] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [photoUrl, setPhotoUrl] = useState('');
-  const [faceIdStatus, setFaceIdStatus] = useState<'enrolled' | 'pending'>('pending');
+  // Form states (Pre-filled with institutional defaults)
+  const [name, setName] = useState('Arun Kumar S');
+  const [rollNumber, setRollNumber] = useState('7376242IT350');
+  const [department, setDepartment] = useState('Information Technology');
+  const [year, setYear] = useState(2);
+  const [section, setSection] = useState('A');
+  const [email, setEmail] = useState('arunkumar.it24@bitsathy.ac.in');
+  const [phone, setPhone] = useState('9876543210');
+  const [photoUrl, setPhotoUrl] = useState('https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150');
+  const [faceIdStatus, setFaceIdStatus] = useState<'enrolled' | 'pending'>('enrolled');
   const [mentorId, setMentorId] = useState(faculty[0]?.id || '');
 
   const openAddDrawer = () => {
     setEditingStudent(null);
-    setName('');
-    setRollNumber('');
-    setDepartment('');
-    setYear(1);
-    setSection('');
-    setEmail('');
-    setPhone('');
-    setPhotoUrl('');
-    setFaceIdStatus('pending');
+    setName('Arun Kumar S');
+    setRollNumber('7376242IT350');
+    setDepartment('Information Technology');
+    setYear(2);
+    setSection('A');
+    setEmail('arunkumar.it24@bitsathy.ac.in');
+    setPhone('9876543210');
+    setPhotoUrl('https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150');
+    setFaceIdStatus('enrolled');
     setMentorId(faculty[0]?.id || '');
     setIsDrawerOpen(true);
   };

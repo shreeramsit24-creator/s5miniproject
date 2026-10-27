@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Calendar,
   RefreshCw,
-  Clock,
   CheckCircle2,
   AlertTriangle,
   AlertCircle,
@@ -13,18 +12,13 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
-  ExternalLink,
-  ChevronDown,
-  ChevronUp,
   FileSpreadsheet,
   UploadCloud,
   Users,
   GraduationCap,
   Sparkles,
   Info,
-  Layers,
   MapPin,
-  BookOpen,
   ArrowRight,
   Loader2
 } from 'lucide-react';
@@ -88,7 +82,7 @@ export const AdminTimetableSyncModal: React.FC<AdminTimetableSyncModalProps> = (
   // Config & URL State - Student Timetable
   const [studentUrl, setStudentUrl] = useState('');
   const [studentLastSyncedAt, setStudentLastSyncedAt] = useState<string | null>(null);
-  const [studentLastSyncStatus, setStudentLastSyncStatus] = useState<string>('idle');
+  const [_studentLastSyncStatus, setStudentLastSyncStatus] = useState<string>('idle');
   const [isSavingStudent, setIsSavingStudent] = useState(false);
   const [studentSaveSuccess, setStudentSaveSuccess] = useState(false);
   const [isSyncingStudent, setIsSyncingStudent] = useState(false);
@@ -96,7 +90,7 @@ export const AdminTimetableSyncModal: React.FC<AdminTimetableSyncModalProps> = (
   // Config & URL State - Teacher Timetable
   const [teacherUrl, setTeacherUrl] = useState('');
   const [teacherLastSyncedAt, setTeacherLastSyncedAt] = useState<string | null>(null);
-  const [teacherLastSyncStatus, setTeacherLastSyncStatus] = useState<string>('idle');
+  const [_teacherLastSyncStatus, setTeacherLastSyncStatus] = useState<string>('idle');
   const [isSavingTeacher, setIsSavingTeacher] = useState(false);
   const [teacherSaveSuccess, setTeacherSaveSuccess] = useState(false);
   const [isSyncingTeacher, setIsSyncingTeacher] = useState(false);
@@ -109,7 +103,7 @@ export const AdminTimetableSyncModal: React.FC<AdminTimetableSyncModalProps> = (
   const teacherFileInputRef = useRef<HTMLInputElement>(null);
 
   // Processing & Loading States
-  const [isLoadingConfig, setIsLoadingConfig] = useState(false);
+  const [_isLoadingConfig, setIsLoadingConfig] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
   const [isDownloadingTemplate, setIsDownloadingTemplate] = useState(false);
@@ -121,7 +115,7 @@ export const AdminTimetableSyncModal: React.FC<AdminTimetableSyncModalProps> = (
   const [conflicts, setConflicts] = useState<ConflictItem[]>([]);
   const [uniqueSections, setUniqueSections] = useState<string[]>([]);
   const [uniqueFaculty, setUniqueFaculty] = useState<string[]>([]);
-  const [uniqueCourses, setUniqueCourses] = useState<string[]>([]);
+  const [_uniqueCourses, setUniqueCourses] = useState<string[]>([]);
   const [stats, setStats] = useState({
     total: 0,
     valid: 0,
@@ -144,14 +138,26 @@ export const AdminTimetableSyncModal: React.FC<AdminTimetableSyncModalProps> = (
   const [applyResult, setApplyResult] = useState<ApplyResult | null>(null);
   const [showInstructions, setShowInstructions] = useState(false);
 
-  // Load config on open
-  useEffect(() => {
-    if (isOpen) {
-      loadConfig();
-      setApplyResult(null);
-      setErrorMessage(null);
-    }
-  }, [isOpen]);
+  const loadPreviewData = (data: any) => {
+    setPreviewRows(data.preview_rows || []);
+    setConflicts(data.conflicts || []);
+    setUniqueSections(data.unique_sections || []);
+    setUniqueFaculty(data.unique_faculty || []);
+    setUniqueCourses(data.unique_courses || []);
+    const incomingSheets = (data.sheet_names && data.sheet_names.length > 0)
+      ? data.sheet_names
+      : Array.from(new Set((data.preview_rows || []).map((r: any) => r.sheet_name).filter(Boolean))) as string[];
+    setSheetNames(incomingSheets);
+    setSelectedSheetFilter('all');
+    setStats({
+      total: data.total_slots || 0,
+      valid: data.valid_slots_count || 0,
+      warning: data.warning_slots_count || 0,
+      error: data.error_slots_count || 0,
+      conflictCount: data.conflict_count || 0,
+    });
+    setCurrentPage(1);
+  };
 
   const loadConfig = async () => {
     setIsLoadingConfig(true);
@@ -180,26 +186,14 @@ export const AdminTimetableSyncModal: React.FC<AdminTimetableSyncModalProps> = (
     }
   };
 
-  const loadPreviewData = (data: any) => {
-    setPreviewRows(data.preview_rows || []);
-    setConflicts(data.conflicts || []);
-    setUniqueSections(data.unique_sections || []);
-    setUniqueFaculty(data.unique_faculty || []);
-    setUniqueCourses(data.unique_courses || []);
-    const incomingSheets = (data.sheet_names && data.sheet_names.length > 0)
-      ? data.sheet_names
-      : Array.from(new Set((data.preview_rows || []).map((r: any) => r.sheet_name).filter(Boolean))) as string[];
-    setSheetNames(incomingSheets);
-    setSelectedSheetFilter('all');
-    setStats({
-      total: data.total_slots || 0,
-      valid: data.valid_slots_count || 0,
-      warning: data.warning_slots_count || 0,
-      error: data.error_slots_count || 0,
-      conflictCount: data.conflict_count || 0,
-    });
-    setCurrentPage(1);
-  };
+  // Load config on open
+  useEffect(() => {
+    if (isOpen) {
+      loadConfig();
+      setApplyResult(null);
+      setErrorMessage(null);
+    }
+  }, [isOpen]);
 
   const handleSaveStudentConfig = async () => {
     if (!studentUrl.trim()) return;
@@ -349,7 +343,7 @@ export const AdminTimetableSyncModal: React.FC<AdminTimetableSyncModalProps> = (
     try {
       await adminApi.downloadTimetableTemplate();
     } catch (err: any) {
-      setErrorMessage('Failed to download timetable template.');
+      setErrorMessage(err?.response?.data?.detail || err?.message || 'Failed to download timetable template.');
     } finally {
       setIsDownloadingTemplate(false);
     }

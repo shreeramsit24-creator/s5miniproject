@@ -75,7 +75,7 @@ export const FacultyLeave: React.FC = () => {
   const [startSession, setStartSession] = useState<DaySession>('FN');
   const [endDate, setEndDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [endSession, setEndSession] = useState<DaySession>('AN');
-  const [reason, setReason] = useState('');
+  const [reason, setReason] = useState('Attending Faculty Development Programme (FDP) & AI Research Workshop');
 
   const showToast = (msg: string) => {
     setToastMessage(msg);

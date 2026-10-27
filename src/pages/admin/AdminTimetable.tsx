@@ -36,7 +36,7 @@ export const AdminTimetable: React.FC = () => {
   // Form states for new slot
   const [modalSubjectId, setModalSubjectId] = useState<string>('');
   const [modalFacultyId, setModalFacultyId] = useState<string>('');
-  const [modalRoom, setModalRoom] = useState('');
+  const [modalRoom, setModalRoom] = useState('LH-301');
   const [modalDuration, setModalDuration] = useState('60');
   const [dbSuccessMessage, setDbSuccessMessage] = useState<string | null>(null);
 

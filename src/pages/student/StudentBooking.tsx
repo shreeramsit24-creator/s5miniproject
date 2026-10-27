@@ -11,7 +11,6 @@ import {
   ShieldCheck, 
   AlertCircle, 
   X, 
-  Ticket, 
   ChevronRight, 
   ChevronDown,
   Trash2, 
@@ -20,17 +19,12 @@ import {
   FileCheck,
   Send,
   Plus,
-  Paperclip,
-  GraduationCap,
   XCircle,
   Clock3,
-  UserCheck,
   Sunrise, 
   Sunset,
   Database,
-  Sparkles,
   BookOpen,
-  Layers,
   RefreshCw
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
@@ -43,7 +37,6 @@ export const StudentBooking: React.FC = () => {
   const { 
     bookings, 
     addBooking, 
-    cancelBooking, 
     selectedStudent, 
     students,
     subjects, 
@@ -60,7 +53,7 @@ export const StudentBooking: React.FC = () => {
 
   useEffect(() => {
     syncWithBackend();
-  }, []);
+  }, [syncWithBackend]);
 
   // Primary navigation: 'timetable' = Time Table, 'available' = Bookings, 'leave' = Leave Applications
   const [activeTab, setActiveTab] = useState<'available' | 'leave' | 'timetable'>('timetable');
@@ -172,7 +165,6 @@ export const StudentBooking: React.FC = () => {
   // Booking states
   const [confirmingSlot, setConfirmingSlot] = useState<BookingSlot | null>(null);
   const [confirmedPassSlot, setConfirmedPassSlot] = useState<BookingSlot | null>(null);
-  const [cancelingSlotId, setCancelingSlotId] = useState<string | null>(null);
   const [cancelingLeaveId, setCancelingLeaveId] = useState<string | null>(null);
 
   // Leave Form states (Mentor is assigned via Admin Portal & automatically fetched)
@@ -182,7 +174,7 @@ export const StudentBooking: React.FC = () => {
   const [startSession, setStartSession] = useState<'FN' | 'AN'>('FN');
   const [leaveEndDate, setLeaveEndDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [endSession, setEndSession] = useState<'FN' | 'AN'>('FN');
-  const [leaveReason, setLeaveReason] = useState('');
+  const [leaveReason, setLeaveReason] = useState('Attending State Level Academic Hackathon & Technical Symposium');
   const [leaveFilterStatus, setLeaveFilterStatus] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
   const [submitFeedback, setSubmitFeedback] = useState<string | null>(null);
   useEffect(() => {
@@ -259,15 +251,6 @@ export const StudentBooking: React.FC = () => {
       isHalfDay: totalDays === 0.5,
       summary: `${totalDays} ${totalDays === 1 ? 'Day' : totalDays === 0.5 ? 'Half Day' : 'Days'}`
     };
-  };
-
-  // Backward-compatible calculateDays helper for strings
-  const calculateDays = (start: string, end: string) => {
-    const s = new Date(start);
-    const e = new Date(end);
-    const diffTime = Math.abs(e.getTime() - s.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-    return isNaN(diffDays) ? 1 : diffDays;
   };
 
   // Automatically fetch student's assigned mentor from DB or currentUser

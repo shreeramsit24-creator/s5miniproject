@@ -118,13 +118,13 @@ export const FacultyMobileApp: React.FC = () => {
       <header className="hidden md:flex sticky top-0 z-50 bg-white border-b border-slate-200 px-6 lg:px-10 py-3.5 items-center justify-between shadow-xs">
         {/* Brand & Identity */}
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-xs">
-            <Radio size={18} className="text-white animate-pulse" />
+          <div className="w-9 h-9 rounded-xl bg-white border border-slate-200 p-1 flex items-center justify-center shadow-xs">
+            <img src="/classsure-logo.png" alt="ClassSure" className="w-full h-full object-contain" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <span className="font-extrabold text-base text-slate-900 tracking-tight leading-none">
-                Smart Attendance
+                ClassSure
               </span>
               <span className="px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-bold">
                 Faculty
@@ -287,13 +287,10 @@ export const FacultyMobileApp: React.FC = () => {
           UNIFIED MOBILE STICKY APP HEADER (Single cohesive bar)
           ======================================================== */}
       <header className="md:hidden sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 px-3.5 py-2.5 flex items-center justify-between shadow-2xs">
-        {/* Left: Avatar + Greeting & Name + Role Badge */}
+        {/* Left: ClassSure Logo + Name + Role Badge */}
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="relative shrink-0">
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-600 to-indigo-800 text-white flex items-center justify-center text-xs font-black border-2 border-indigo-200 shadow-xs">
-              {getInitials(facultyName)}
-            </div>
-            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white" />
+          <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 p-1 flex items-center justify-center shrink-0 shadow-xs">
+            <img src="/classsure-logo.png" alt="ClassSure" className="w-full h-full object-contain" />
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5">

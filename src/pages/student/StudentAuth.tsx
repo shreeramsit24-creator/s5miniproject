@@ -15,8 +15,9 @@ export const StudentAuth: React.FC<StudentAuthProps> = ({ onLoginSuccess }) => {
   const { setAuthUser, syncWithBackend } = useAppStore();
 
   const [isSplashing, setIsSplashing] = useState(true);
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
+  // Pre-filled with institutional student credentials for instant submission
+  const [identifier, setIdentifier] = useState('7376242IT303');
+  const [password, setPassword] = useState('student123');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -154,10 +155,10 @@ export const StudentAuth: React.FC<StudentAuthProps> = ({ onLoginSuccess }) => {
   if (isSplashing) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center bg-white p-6 text-center animate-in fade-in duration-500">
-        <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-teal-500 via-emerald-500 to-indigo-600 flex items-center justify-center shadow-xl shadow-teal-500/25 animate-bounce">
-          <Sparkles size={38} className="text-white" />
+        <div className="w-20 h-20 rounded-3xl bg-white border border-slate-200 flex items-center justify-center shadow-xl shadow-teal-500/15 animate-bounce p-2">
+          <img src="/classsure-logo.png" alt="ClassSure" className="w-full h-full object-contain" />
         </div>
-        <h1 className="text-2xl font-black text-slate-900 mt-6 tracking-tight">Smart Attendance</h1>
+        <h1 className="text-2xl font-black text-slate-900 mt-6 tracking-tight">ClassSure</h1>
         <span className="text-xs font-bold uppercase tracking-widest text-teal-600 mt-1">
           Student Portal
         </span>
@@ -183,10 +184,10 @@ export const StudentAuth: React.FC<StudentAuthProps> = ({ onLoginSuccess }) => {
 
       {/* Centered Logo & Title with Teal-Indigo Accent */}
       <div className="pt-4 text-center">
-        <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-teal-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-teal-500/25 mb-3">
-          <Sparkles size={24} />
+        <div className="w-16 h-16 mx-auto rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-md p-1.5 mb-3">
+          <img src="/classsure-logo.png" alt="ClassSure" className="w-full h-full object-contain" />
         </div>
-        <h2 className="text-2xl font-black text-slate-900 tracking-tight">Student Login</h2>
+        <h2 className="text-2xl font-black text-slate-900 tracking-tight">ClassSure Student Login</h2>
       </div>
 
       {/* Form in Light Theme */}

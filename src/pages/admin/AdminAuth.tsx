@@ -28,8 +28,9 @@ export const AdminAuth: React.FC<AdminAuthProps> = ({ onLoginSuccess }) => {
   const { setRole, setAuthUser, setAdminActiveTab, syncWithBackend } = useAppStore();
 
   const [isSplashing, setIsSplashing] = useState(true);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  // Pre-filled with default institutional admin credentials for instant submission
+  const [username, setUsername] = useState('admin');
+  const [password, setPassword] = useState('admin123');
   const [showPassword, setShowPassword] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -135,10 +136,10 @@ export const AdminAuth: React.FC<AdminAuthProps> = ({ onLoginSuccess }) => {
   if (isSplashing) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center min-h-screen bg-white p-6 text-center animate-in fade-in duration-500 relative overflow-hidden">
-        <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-amber-500 via-amber-600 to-amber-700 flex items-center justify-center shadow-xl shadow-amber-500/25 animate-bounce">
-          <Sparkles size={38} className="text-white" />
+        <div className="w-20 h-20 rounded-3xl bg-white border border-slate-200 flex items-center justify-center shadow-xl shadow-amber-500/15 animate-bounce p-2">
+          <img src="/classsure-logo.png" alt="ClassSure" className="w-full h-full object-contain" />
         </div>
-        <h1 className="text-2xl font-black text-slate-900 mt-6 tracking-tight">Smart Attendance</h1>
+        <h1 className="text-2xl font-black text-slate-900 mt-6 tracking-tight">ClassSure</h1>
         <span className="text-xs font-bold uppercase tracking-widest text-amber-700 mt-1">
           Admin Portal
         </span>
@@ -172,11 +173,11 @@ export const AdminAuth: React.FC<AdminAuthProps> = ({ onLoginSuccess }) => {
       <div className="w-full max-w-md mx-auto bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xl shadow-slate-200/60 my-auto">
         {/* Header Branding */}
         <div className="text-center mb-6">
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-700 flex items-center justify-center text-white shadow-lg shadow-amber-500/25 mb-3">
-            <ShieldCheck size={26} />
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-md p-1.5 mb-3">
+            <img src="/classsure-logo.png" alt="ClassSure" className="w-full h-full object-contain" />
           </div>
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight">Admin Sign In</h2>
-          <p className="text-xs text-slate-500 mt-1">Smart Attendance Management Console</p>
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">ClassSure Admin Sign In</h2>
+          <p className="text-xs text-slate-500 mt-1">Institutional Attendance & Schedule Management Console</p>
         </div>
 
         {/* Preset Credentials Banner */}
